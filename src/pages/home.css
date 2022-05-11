@@ -1,0 +1,27 @@
+@keyframes moveRight {
+    from {
+        left: 0px;
+    }
+
+    to {
+        left: 160px;
+    }
+}
+
+@keyframes moveLeft {
+    from {
+        left: 160px;
+    }
+
+    to {
+        left: 0px;
+    }
+}
+
+.animateRight {
+    animation: moveRight 0.2s linear forwards;
+}
+
+.animateLeft {
+    animation: moveLeft 0.2s linear forwards;
+}

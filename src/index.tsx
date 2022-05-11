@@ -1,7 +1,9 @@
+import "./index.css";
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './Application';
 import reportWebVitals from './reportWebVitals';
+import 'flowbite';
 
 ReactDOM.render(
     <React.StrictMode>
