@@ -5,7 +5,7 @@ import AboutPage from './pages/About';
 import HomePage from './pages/Home';
 import TestPage from './pages/Test';
 
-export interface IApplicationProps {}
+export interface IApplicationProps { }
 
 const Application: React.FunctionComponent<IApplicationProps> = (props) => {
     return (

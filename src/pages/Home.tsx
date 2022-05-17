@@ -46,15 +46,11 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
 
     }
 
-
-
-
-
     // https://www.w3schools.com/tags/ref_eventattributes.asp
     // justify-between
     return (
         <div className='w-screen h-screen bg-stone-900 flex flex-col sm:flex-row sm:justify-center py-10 sm:px-40 px-2'>
-            <div className="left mx-5 sm:flex sm:justify-center sm:flex-col sm:w-[40%]" onMouseDown={() => console.log("ich bin drinne")} onMouseLeave={() => { console.log("leave 1") }} onMouseEnter={() => { console.log("1") }}>
+            <div className="left mx-5 sm:flex sm:justify-center sm:flex-col sm:w-[40%]" onMouseDown={() => console.log("ich bin drinne 1")} onMouseLeave={() => { console.log("leave 1") }} onMouseEnter={() => { console.log("1") }}>
                 <h5 className='font-bold text-2xl  text-neutral-200 sm:text-4xl '>Wilkommen bei MyCallendar</h5>
                 <p className='font-bold  text-neutral-200 pt-5 sm:text-xl'>Hier kannst du...</p>
                 <div className="pl-5 py-10">
@@ -89,7 +85,7 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
                     </div>
                 </div>
             </div>
-            <div className='flex justify-center mx-5 flex-col sm:w-[40%]' onMouseEnter={() => { console.log("2") }}>
+            <div className='flex justify-center mx-5 flex-col sm:w-[40%]' onMouseDown={() => console.log("ich bin drinne 2")} onMouseEnter={() => { console.log("2") }}>
                 <div className="sign-button-group">
                     {/* border-b-2 */}
                     <button ref={anmeldenWidth} onClick={handleAnmeldenClick}
