@@ -1,12 +1,14 @@
 import React from 'react';
+import useStore from '../store/useWeekNamesStore';
 
 export interface IMonthCalendarComponentProps {
-    dayNamesShort: string[],
     weekChunks?: Date[][],
     currentMonth?: number
 }
 
-const MonthCalendar: React.FunctionComponent<IMonthCalendarComponentProps> = ({ dayNamesShort, weekChunks, currentMonth }) => {
+const MonthCalendar: React.FunctionComponent<IMonthCalendarComponentProps> = ({ weekChunks, currentMonth }) => {
+
+    const dayNamesShort = useStore((state) => state.dayNamesShort);
     return (
         <div>
             <div className=' grid grid-cols-7'>

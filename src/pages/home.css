@@ -25,3 +25,22 @@
 .animateLeft {
     animation: moveLeft 0.2s linear forwards;
 }
+
+
+@keyframes slideUp {
+    from {
+        /* right: 5px; */
+        margin: 1em;
+        bottom: -6em;
+    }
+
+    to {
+        bottom: 0em;
+        margin: 1em;
+        right: 5px;
+    }
+}
+
+.slideIn {
+    animation: slideUp 0.2s linear forwards;
+}
