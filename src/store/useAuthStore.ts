@@ -10,7 +10,7 @@ export interface IAuth {
 
 const useAuthStore = create<IAuth>((set, get) => ({
     user: null,
-    isSignIn: false,
+    isSignIn: true,
     changeUser: (user) => {
         set((prev) => ({ user: user }));
     },
