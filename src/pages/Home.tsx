@@ -7,7 +7,7 @@ import ErrorDiv from '../components/ErrorDiv';
 import axios from 'axios';
 import useAuthStore from '../store/useAuthStore';
 
-export interface IHomePageProps {}
+export interface IHomePageProps { }
 
 const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
     const {
@@ -31,7 +31,7 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
     const [errorText, setErrorText] = useState<String>('Email oder Passwort sind falsch! Bitte versuche es erneut.');
     const [tipText, setTipText] = useState<String>('Wir haben dir einen Verifizierungslink geschickt.');
 
-    const { changeIsSignIn, changeUser } = useAuthStore((state) => state);
+    const { changeIsSignIn, setToken } = useAuthStore((state) => state);
 
     useEffect(() => {
         setAw(anmeldenWidth.current?.offsetWidth!);
@@ -63,7 +63,7 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
             .post(process.env.REACT_APP_LOGIN!, null, { headers: { Authorization: 'Basic ' + window.btoa(email + ':' + password) } })
             .then((resp) => {
                 const data = resp.data['jwt-token'];
-                changeUser(data);
+                setToken(data);
                 changeIsSignIn(true);
                 navigate('/test', { replace: true });
             })
@@ -275,10 +275,10 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
                                 ></path>
                             </svg>
                             <div className="ml-3 text-sm font-medium text-green-700 dark:text-green-800">
-                               {tipText}
+                                {tipText}
                             </div>
                             <button
-                             onClick={() => setShowTip(false)}
+                                onClick={() => setShowTip(false)}
                                 type="button"
                                 className="ml-auto -mx-1.5 -my-1.5 bg-green-100 text-green-500 rounded-lg focus:ring-2 focus:ring-green-400 p-1.5 hover:bg-green-200 inline-flex h-8 w-8 dark:bg-green-200 dark:text-green-600 dark:hover:bg-green-300"
                                 data-dismiss-target="#alert-3"

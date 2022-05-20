@@ -2,17 +2,17 @@ import { DateRange } from 'react-day-picker';
 import create from 'zustand';
 
 export interface IAuth {
-    user: any;
-    changeUser: (user: any) => void;
+    token: any;
+    setToken: (user: any) => void;
     isSignIn: boolean;
     changeIsSignIn: (boo: boolean) => void;
 }
 
 const useAuthStore = create<IAuth>((set, get) => ({
-    user: null,
+    token: null,
     isSignIn: true,
-    changeUser: (user) => {
-        set((prev) => ({ user: user }));
+    setToken: (token) => {
+        set((prev) => ({ token }));
     },
     changeIsSignIn: (boo) => {
         set((prev) => ({ isSignIn: boo }));
