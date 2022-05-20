@@ -2,12 +2,13 @@ import { MoreVert } from '@mui/icons-material';
 import React from 'react';
 
 export interface IUpcommingeventsComponentProps {
+    // createEvent: (date: Date) => void
     // dayNamesShort: string[],
     // weekChunks?: Date[][],
     // currentMonth?: number
 }
 
-const Upcommingevents: React.FunctionComponent<IUpcommingeventsComponentProps> = () => {
+const Upcommingevents: React.FunctionComponent<IUpcommingeventsComponentProps> = ({ }) => {
     return (
         <div className="overflow-scroll h-[17em] sm:h-[90vh] sm:w-[25%]">
             <h1 className='text-white font-bold mb-2'>Es stehen xx Termine bevor</h1>
