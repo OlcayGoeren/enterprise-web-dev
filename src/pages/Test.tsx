@@ -96,7 +96,7 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
         <>
             <div className="w-screen h-screen bg-[#2B2B2B] flex flex-col">
                 <NavigationBar handleDayClick={handleDayClick} />
-                <main className='p-2 flex flex-col sm:flex-row-reverse sm:justify-end'>
+                <main className='p-2 flex flex-col sm:flex-row-reverse sm:justify-end h-[89%] '>
                     <div className='sm:w-[100%] sm:p-4'>
                         <div className="multibuttons my-2 flex flex-row">
                             <div className="">

@@ -15,7 +15,7 @@ const MonthCalendar: React.FunctionComponent<IMonthCalendarComponentProps> = ({ 
     const dayNamesShort = useStore((state) => state.dayNamesShort);
     return (
         <>
-            <div className='flex flex-col justify-center sm:h-[99%]'>
+            <div className='flex flex-col justify-center'>
                 <div className='grid grid-cols-7'>
                     {dayNamesShort.map((ele) => {
                         return <span className='flex justify-center text-white'>{ele}</span>
@@ -26,7 +26,7 @@ const MonthCalendar: React.FunctionComponent<IMonthCalendarComponentProps> = ({ 
                     <div className='grid grid-cols-7 border-[#A1A1A1] border-2 rounded-lg mt-4 sm:h-[100%] sm:m-0'>
                         {weekChunks?.map((week: Date[], weekIndex: number) => {
                             return week.map((day: Date, dayIndex: number) => {
-                                return <button onClick={() => createEvent(day)} className={` border-[#CFCFCF]/[.3] ${weekIndex != weekChunks.length - 1 ? "border-b-[1px] sm:h-auto" : ""}  h-14 flex justify-center ${dayIndex != 6 ? "border-r-[1px] sm:h-auto" : ""}
+                                return <button onClick={() => createEvent(day)} className={`pb-[53%] sm:pb-[3.5em] border-[#CFCFCF]/[.3] ${weekIndex != weekChunks.length - 1 ? "border-b-[1px] sm:h-auto" : ""}  h-14 flex justify-center ${dayIndex != 6 ? "border-r-[1px] sm:h-auto" : ""}
                         }
                         `}> <span className={`
                         text-center
