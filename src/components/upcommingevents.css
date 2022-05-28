@@ -1,0 +1,11 @@
+.customeTheme {
+    color: green !important;
+    background-color: white !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+}
+
+.customeTheme::after {
+    cursor: pointer !important;
+}

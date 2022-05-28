@@ -3,23 +3,29 @@ import React, { useRef, useState } from 'react';
 import { Title, TextSnippet, DateRange as DateRangeIcon, Place, GroupAdd, Replay, Save, Close, Add, ImportExport, Send, EventBusy, Delete } from '@mui/icons-material';
 import "./appointmentmodal.css"
 import useAppointmentModal from '../store/useAppointmentModal';
+import useTerminStore, { Intervall } from '../store/useTerminStore';
 
 
 
-export interface ITestPageProps { }
+export interface ITestPageProps {
+    dateProp: Date | undefined;
+}
 
-const AppointmentModal: React.FunctionComponent<ITestPageProps> = (props) => {
+const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp }) => {
 
     const { show, setShow, showButtons } = useAppointmentModal((state) => state)
 
     const [emailList, setEmailList] = useState<string[]>([]);
     const [email, setEmail] = useState<string>("");
-    const [title, setTitle] = useState<string>("");
-    const [details, setDetails] = useState<string>("");
-    const [date, setDate] = useState<string>("");
-    const [ort, setOrt] = useState<string>("");
+    const [title, setTitle] = useState<string>("Titel");
+    const [details, setDetails] = useState<string>("Details");
+    const [date, setDate] = useState<string>(dateProp !== undefined ? dateProp.toLocaleDateString() : "");
+    const [von, setVon] = useState<string>("");
+    const [bis, setBis] = useState<string>("");
+    const [ort, setOrt] = useState<string>("BLN");
     const [intervall, setIntervall] = useState<string>("");
 
+    const { localPush } = useTerminStore((state) => state);
 
 
     const modal = useRef<HTMLDivElement>(null)
@@ -45,9 +51,15 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = (props) => {
     }
 
     function submit() {
-        console.log(title, details, date, ort, intervall)
+        localPush({
+            date: new Date(2022, 3, 25),
+            details,
+            emailList: ["olcayg@gmail.com"],
+            title,
+            ort,
+            intervall: Intervall.MONTHLY
+        })
     }
-
 
 
 
@@ -62,8 +74,8 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = (props) => {
                     <div className="flex flex-row title text-[#C1C1C1] py-4 relative">
                         <span className='pr-4 relative top-[15px]'> <Title /> </span>
                         <div className="relative z-0 w-full mt-1 group text-white">
-                            <input onChange={(e) => setTitle(e.target.value)} type="text" name="floating_email" className="text-white block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
-                            <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-gray-200  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Titel</label>
+                            <input onChange={(e) => setTitle(e.target.value)} value={title} type="text" name="floating_email" className="text-white block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
+                            <label htmlFor="floating_email" className=" peer-focus:font-medium absolute text-sm text-gray-200  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Titel</label>
                         </div>
                     </div>
                 </div>
@@ -91,21 +103,31 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = (props) => {
                     <div className="flex flex-row title text-[#141252] py-4 relative">
                         <span className='pr-4 relative top-[15px]'> <TextSnippet /> </span>
                         <div className="relative z-0 w-full mt-1 group text-white">
-                            <input onChange={(e) => setDetails(e.target.value)} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" required />
+                            <input onChange={(e) => setDetails(e.target.value)} value={details} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" required />
                             <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Details</label>
                         </div>
                     </div>
                     <div className="flex flex-row title text-[#141252] py-4 relative">
                         <span className='pr-4 relative top-[15px]'> <DateRangeIcon /> </span>
-                        <div className="relative z-0 w-full mt-1 group text-white">
-                            <input onChange={(e) => setDate(e.target.value)} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
-                            <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Zeit</label>
+                        <div className="relative z-0 w-[30%] mt-1 group text-white mr-2">
+                            <input onChange={(e) => setDate(e.target.value)} value={date} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder="" required />
+                            <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-0 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Datum dd.mm.yyyy</label>
                         </div>
+                        <div className="relative z-0 w-[25%] mt-1 group text-white mr-2">
+                            <input onChange={(e) => setVon(e.target.value)} value={von} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
+                            <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-0 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">von hh.mm</label>
+                        </div>
+                        <div className="relative z-0 w-[25%] mt-1 group text-white">
+                            <input onChange={(e) => setVon(e.target.value)} value={bis} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
+                            <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-0 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">bis hh.mm</label>
+                        </div>
+
                     </div>
+
                     <div className="flex flex-row title text-[#141252] py-4 relative">
                         <span className='pr-4 relative top-[15px]'> <Place /> </span>
                         <div className="relative z-0 w-full mt-1 group text-white">
-                            <input onChange={(e) => setOrt(e.target.value)} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
+                            <input onChange={(e) => setOrt(e.target.value)} value={ort} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
                             <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Ort</label>
                         </div>
                     </div>

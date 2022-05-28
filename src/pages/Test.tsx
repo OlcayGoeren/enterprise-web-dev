@@ -21,6 +21,7 @@ export interface ITestPageProps { }
 const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
 
     const [monthView, setMonthView] = useState(true);
+    const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const { setShow, show } = useAppointmentModal((state) => state);
 
     const [year, setYear] = useState<Array<string>>([]);
@@ -82,16 +83,10 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
     }
 
     const createEvent = (date: Date) => {
+        setSelectedDate(date);
         setShow(true);
     }
 
-    const closeModal = () => {
-        modal.current?.classList.toggle("comeOut")
-        setTimeout(() => {
-            setShow(false)
-        }, 200)
-
-    }
     return (
         <>
             <div className="w-screen h-screen bg-[#2B2B2B] flex flex-col">
@@ -131,7 +126,7 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
             </div>
 
             {show ?
-                <AppointmentModal />
+                <AppointmentModal dateProp={selectedDate} />
                 :
                 null
             }
