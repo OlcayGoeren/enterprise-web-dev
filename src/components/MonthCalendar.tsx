@@ -19,6 +19,7 @@ const MonthCalendar: React.FunctionComponent<IMonthCalendarComponentProps> = ({ 
     const dayNamesShort = useStore((state) => state.dayNamesShort);
 
     useEffect(() => {
+        // alert("rerender")
         for (let i = 0; i < localAppointments.length; i++) {
             const element = localAppointments[i].date;
             if (element.getMonth() === currentMonth) {
@@ -26,7 +27,7 @@ const MonthCalendar: React.FunctionComponent<IMonthCalendarComponentProps> = ({ 
                 break;
             }
         }
-    }, [weekChunks])
+    }, [weekChunks, localAppointments])
 
     function scrollUpcommingEventsList(e: React.MouseEvent<HTMLSpanElement, MouseEvent>) {
         e.stopPropagation();
@@ -57,13 +58,14 @@ const MonthCalendar: React.FunctionComponent<IMonthCalendarComponentProps> = ({ 
                         ${new Date().getDate() === day.getDate() && new Date().getMonth() === day.getMonth() ? " bg-blue-700" : ""}
                         `}>{day.getDate()}
                                         {
-                                            localAppointments[idx!].appointments.map((ele) => {
-                                                return ele.date.toDateString() === day.toDateString() ?
-                                                    <span onClick={(e) => scrollUpcommingEventsList(e)} className="absolute w-2 h-2 rounded-full bg-red-800
+                                            idx != undefined ?
+                                                localAppointments[idx!].appointments.map((ele) => {
+                                                    return ele.date.toDateString() === day.toDateString() ?
+                                                        <span onClick={(e) => scrollUpcommingEventsList(e)} className="absolute w-2 h-2 rounded-full bg-red-800
                                                 top-[70%] left-[45%] transform-translate-x-[-70%] transform-translate-y-[-70%] sm:w-3 sm:h-3"></span>
-                                                    : ""
+                                                        : ""
 
-                                            })
+                                                }) : ""
                                         }
                                     </span>  </button>
                             })

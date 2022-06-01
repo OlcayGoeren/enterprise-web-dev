@@ -81,7 +81,7 @@ const initOrdered: IAppointmentOrdererd[] = [
         date: new Date(2022, 1, 30, 12, 0),
         appointments: [
             {
-                date: new Date(2022, 1, 24, 16, 30),
+                date: new Date(2022, 1, 30, 12, 0),
                 details: "Um diese Zeit sollten wir ca. ankommen",
                 emailList: ["olcaygoeren@gmail.com"],
                 intervall: Intervall.DAILY,
@@ -89,7 +89,7 @@ const initOrdered: IAppointmentOrdererd[] = [
                 title: "ANKUNFT"
             },
             {
-                date: new Date(2022, 1, 24, 18, 20),
+                date: new Date(2022, 1, 30, 12, 0),
                 details: "Um diese Zeit sollten wir ca. ankommen",
                 emailList: ["olcaygoeren@gmail.com"],
                 intervall: Intervall.DAILY,
@@ -102,7 +102,7 @@ const initOrdered: IAppointmentOrdererd[] = [
         date: new Date(2022, 3, 24, 12, 0),
         appointments: [
             {
-                date: new Date(2022, 3, 24, 22, 30),
+                date: new Date(2022, 3, 24, 12, 0),
                 details: "Um diese Zeit sollten wir ca. ankommen",
                 emailList: ["olcaygoeren@gmail.com"],
                 intervall: Intervall.DAILY,

@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Title, TextSnippet, DateRange as DateRangeIcon, Place, GroupAdd, Replay, Save, Close, Add, ImportExport, Send, EventBusy, Delete } from '@mui/icons-material';
 import "./appointmentmodal.css"
 import useAppointmentModal from '../store/useAppointmentModal';
@@ -13,7 +13,7 @@ export interface ITestPageProps {
 
 const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp }) => {
 
-    const { show, setShow, showButtons } = useAppointmentModal((state) => state)
+    const { show, setShow, showButtons, selectedTermin, setSelectedTermin } = useAppointmentModal((state) => state)
 
     const [emailList, setEmailList] = useState<string[]>([]);
     const [email, setEmail] = useState<string>("");
@@ -27,6 +27,17 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
 
     const { localPush } = useTerminStore((state) => state);
 
+    useEffect(() => {
+        if (selectedTermin) {
+            setTitle(selectedTermin.title);
+            setDetails(selectedTermin.details)
+            setDate(selectedTermin.date.toLocaleDateString())
+            setOrt(selectedTermin.ort)
+            setEmailList(selectedTermin.emailList);
+        }
+    }, [selectedTermin])
+
+
 
     const modal = useRef<HTMLDivElement>(null)
 
@@ -34,6 +45,7 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
         modal.current?.classList.toggle("comeOut")
         setTimeout(() => {
             setShow(false)
+            setSelectedTermin(undefined);
         }, 200)
     }
 
@@ -51,8 +63,9 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
     }
 
     function submit() {
+        let splitted = date.split(".")
         localPush({
-            date: new Date(2022, 3, 25),
+            date: new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0])),
             details,
             emailList: ["olcayg@gmail.com"],
             title,
