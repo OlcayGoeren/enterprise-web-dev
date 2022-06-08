@@ -12,6 +12,8 @@ import NavigationBar from '../components/NavigationBar';
 import useRangeStore from '../store/useRangeStore';
 import AppointmentModal from '../components/AppointmentModal';
 import useAppointmentModal from '../store/useAppointmentModal';
+import useTerminStore from '../store/useTerminStore';
+import useAuthStore from '../store/useAuthStore';
 
 
 
@@ -23,41 +25,26 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
     const [monthView, setMonthView] = useState(true);
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const { setShow, show } = useAppointmentModal((state) => state);
-
     const [year, setYear] = useState<Array<string>>([]);
     const months = useStore((state) => state.months);
-
-    // const [range, setRange] = useState<DateRange | undefined>({ from: new Date(), to: undefined });
     const { range, changeRange } = useRangeStore((store) => store);
     const [weekChunks, setWeekChunks] = useState<Date[][]>();
-    // const [currentMonth, setCurrentMoth] = useState<number>();
     const { selectedMonth, changeMonth } = useRangeStore((store) => store);
+    const { token } = useAuthStore((store) => store);
+    const { getAppointments, appointments } = useTerminStore((store) => store);
+
 
     const modal = useRef<HTMLDivElement>(null)
-
-    // const [windowWidth, setWindowWidth] = useState(0);
-    // const [windowHeight, setWindowHeight] = useState(0);
-    // let resizeWindow = () => {
-    //     setWindowWidth(window.innerWidth);
-    //     setWindowHeight(window.innerHeight);
-    // };
-
-    // useEffect(() => {
-    //     // const range = (start: number, stop: number, step: number) => Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + (i * step));
-    //     // const numbers = range(1990, 2022, 1).map((ele: number) => { return ele + "" });
-    //     // setYear(numbers);
-    //     window.addEventListener("resize", resizeWindow);
-    //     return () => window.removeEventListener("resize", resizeWindow);
-    // }, []);
-
 
     useEffect(() => {
         changeMonth(range?.from!.getMonth()!);
         const start = getStartMonth(range?.from!)
         const end = getEndMonth(range?.from!)
         setWeekChunks(getDatesAndChunkBetween(start, end));
+        (async function anyNameFunction() {
+            await getAppointments(token);
+        })();
     }, [range]);
-
 
 
     const handleDayClick = (day: Date) => {

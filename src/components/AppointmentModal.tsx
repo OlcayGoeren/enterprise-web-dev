@@ -4,6 +4,10 @@ import { Title, TextSnippet, DateRange as DateRangeIcon, Place, GroupAdd, Replay
 import "./appointmentmodal.css"
 import useAppointmentModal from '../store/useAppointmentModal';
 import useTerminStore, { Intervall } from '../store/useTerminStore';
+import useAuthStore from '../store/useAuthStore';
+import { getMinutes } from 'date-fns';
+import axios from 'axios';
+import fileDownload from "js-file-download";
 
 
 
@@ -13,7 +17,7 @@ export interface ITestPageProps {
 
 const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp }) => {
 
-    const { show, setShow, showButtons, selectedTermin, setSelectedTermin } = useAppointmentModal((state) => state)
+    const { show, setShow, showButtons, selectedTermin, setSelectedTermin, numOne, numTwo } = useAppointmentModal((state) => state)
 
     const [emailList, setEmailList] = useState<string[]>([]);
     const [email, setEmail] = useState<string>("");
@@ -25,18 +29,21 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
     const [ort, setOrt] = useState<string>("BLN");
     const [intervall, setIntervall] = useState<string>("");
 
-    const { localPush } = useTerminStore((state) => state);
+    const { postAppointments, remove, putAppointment } = useTerminStore((state) => state);
+    const { token } = useAuthStore((state) => state);
 
     useEffect(() => {
         if (selectedTermin) {
+            console.log(selectedTermin);
             setTitle(selectedTermin.title);
             setDetails(selectedTermin.details)
             setDate(selectedTermin.date.toLocaleDateString())
             setOrt(selectedTermin.ort)
             setEmailList(selectedTermin.emailList);
+            setVon(('0' + selectedTermin.von.getHours()).slice(-2) + ":" + ('0' + selectedTermin.von.getMinutes()).slice(-2))
+            setBis(('0' + selectedTermin.bis.getHours()).slice(-2) + ":" + ('0' + selectedTermin.bis.getMinutes()).slice(-2))
         }
     }, [selectedTermin])
-
 
 
     const modal = useRef<HTMLDivElement>(null)
@@ -64,14 +71,75 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
 
     function submit() {
         let splitted = date.split(".")
-        localPush({
-            date: new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0])),
-            details,
-            emailList: ["olcayg@gmail.com"],
-            title,
-            ort,
-            intervall: Intervall.MONTHLY
-        })
+        if (!selectedTermin) {
+            let vonDate = new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0]));
+            let vonSplit = von.split(":");
+            vonDate.setHours(parseInt(vonSplit[0]), parseInt(vonSplit[1]));
+
+            let bisDate = new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0]));
+            let bisSplit = bis.split(":");
+            bisDate.setHours(parseInt(bisSplit[0]), parseInt(bisSplit[1]));
+
+            postAppointments({
+                date: new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0])),
+                details,
+                emailList,
+                title,
+                ort,
+                intervall: Intervall.MONTHLY,
+                von: von.length === 0 ? new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0])) : vonDate,
+                bis: bis.length === 0 ? new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0])) : bisDate,
+            }, token);
+        } else {
+            let vonDate = new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0]));
+            let vonSplit = von.split(":");
+            vonDate.setHours(parseInt(vonSplit[0]), parseInt(vonSplit[1]));
+
+            let bisDate = new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0]));
+            let bisSplit = bis.split(":");
+            bisDate.setHours(parseInt(bisSplit[0]), parseInt(bisSplit[1]));
+
+            putAppointment(
+                {
+                    date: new Date(parseInt(splitted[2]), parseInt(splitted[1]) - 1, parseInt(splitted[0])),
+                    details,
+                    emailList,
+                    title,
+                    ort,
+                    intervall: Intervall.MONTHLY,
+                    id: selectedTermin.id,
+                    von: vonDate,
+                    bis: bisDate,
+                }, token);
+        }
+
+
+        modal.current?.classList.toggle("comeOut")
+        setTimeout(() => {
+            setShow(false)
+            setSelectedTermin(undefined);
+        }, 200)
+    }
+
+    function deleteMe() {
+        if (window.confirm("Are you sure?")) {
+            remove(numOne, numTwo, token);
+            setSelectedTermin(undefined);
+            closeModal();
+        }
+    }
+
+    async function exportMe() {
+        try {
+            const { data } = await axios.post(process.env.REACT_APP_DOWNLOAD!,
+                {
+                    selectedTermin
+                })
+            fileDownload(data, "termin.ics")
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
 
@@ -94,7 +162,7 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
                 </div>
                 {showButtons ?
                     <div className="flex flex-row mx-2 overflow-x-auto">
-                        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  text-center inline-flex items-center py-2 px-3 mr-3">
+                        <button onClick={() => exportMe()} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm  text-center inline-flex items-center py-2 px-3 mr-3">
                             <ImportExport />
                             <span> Exportieren</span>
                         </button>
@@ -102,14 +170,12 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
                             <Send />
                             <span className='w-max'>E-Mail senden</span>
                         </button>
-                        <button type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-center inline-flex items-center mr-2  py-2 px-3">
+                        <button onClick={(ele) => deleteMe()} type="button" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-center inline-flex items-center mr-2  py-2 px-3">
                             <EventBusy />
                             <span className='w-max'>Termin Absagen</span>
                         </button>
                     </div> : null
                 }
-
-
             </div>
             <div className={`p-4 flex justify-between flex-col ${showButtons ? "h-[75vh]" : "h-[82vh]"}`}>
                 <div className="">
@@ -131,7 +197,7 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
                             <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-0 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">von hh.mm</label>
                         </div>
                         <div className="relative z-0 w-[25%] mt-1 group text-white">
-                            <input onChange={(e) => setVon(e.target.value)} value={bis} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
+                            <input onChange={(e) => setBis(e.target.value)} value={bis} type="text" name="floating_email" className="text-[#141252] block py-2.5 px-0 w-full text-sm bg-transparent border-0 border-b-2 border-gray-400 appearance-none focus:outline-none focus:ring-0 focus:border-gray-500 peer" placeholder=" " required />
                             <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-[#141252]  duration-300 transform -translate-y-6 scale-75 top-0 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-gray-400  peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">bis hh.mm</label>
                         </div>
 
@@ -169,7 +235,7 @@ const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp })
 
                         <ul className=" text-sm font-medium text-gray-900 border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                             {emailList.map((ele, idx) => {
-                                return <li className="w-full px-4 py-2   rounded-t-lg border-gray-600 flex justify-between">{ele} <button onClick={() => removeEmail(idx)} className='text-red-900'><Delete /></button> </li>
+                                return <li key={idx} className="w-full px-4 py-2   rounded-t-lg border-gray-600 flex justify-between">{ele} <button onClick={() => removeEmail(idx)} className='text-red-900'><Delete /></button> </li>
                             })}
 
                         </ul>

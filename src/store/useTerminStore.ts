@@ -1,23 +1,25 @@
 import axios from "axios";
+import create, { State } from "zustand";
+import React from 'react';
 import { isEqual } from "date-fns";
-import create from "zustand";
-import React, { useEffect, useRef, useState } from 'react';
-
 
 
 export enum Intervall {
-    DAILY = "daily",
-    WEEKLY = "weekly",
-    MONTHLY = "monthly"
+    DAILY = 0,
+    WEEKLY = 1,
+    MONTHLY = 2
 }
 
 export interface IAppointment {
+    id?: string;
     title: string,
     details: string,
     date: Date,
     ort: string,
     intervall: Intervall | null,
-    emailList: string[]
+    emailList: string[],
+    von: Date,
+    bis: Date,
 }
 
 export interface IAppointmentOrdererd {
@@ -25,179 +27,124 @@ export interface IAppointmentOrdererd {
     appointments: IAppointment[]
 }
 
-export interface ITermineResponse {
-    appointments: IAppointmentOrdererd[] | undefined
-}
-
 export interface ITermine {
-    localAppointments: IAppointmentOrdererd[],
+    appointments: IAppointmentOrdererd[],
     getAppointments: (token: any) => Promise<void>,
     postAppointments: (termin: IAppointment, token: any) => Promise<void>,
-    localPush: (termin: IAppointment) => void,
-    localDelete: (numOne: number, numTwo: number) => void,
+    putAppointment: (termin: IAppointment, token: any) => Promise<void>,
+    remove: (numOne: number, numTwo: number, token: string) => void,
     singleRef?: React.RefObject<HTMLDivElement>,
     listRef?: React.RefObject<HTMLDivElement[]>
     setSingleRef?: (ref: React.RefObject<HTMLDivElement>) => void,
-    setListRef?: (ref: React.RefObject<HTMLDivElement[]>) => void
+    setListRef?: (ref: React.RefObject<HTMLDivElement[]>) => void,
+    orderSingle: (termin: IAppointment) => void,
+    orderAll: (termine: IAppointment[]) => void,
 }
 
-
-const initArray: IAppointment[] = [
-    {
-        date: new Date(2022, 5, 24, 16, 0, 0, 0),
-        details: "Um diese Zeit sollten wir ca. ankommen",
-        emailList: ["olcaygoeren@gmail.com"],
-        intervall: Intervall.DAILY,
-        ort: "Italien",
-        title: "ANKUNFT"
-    },
-    {
-        date: new Date(2022, 5, 26, 16, 0, 0, 0),
-        details: "MAILAND MAILAND MAILAND",
-        emailList: ["olcaygoeren@gmail.com"],
-        intervall: null,
-        ort: "Italien",
-        title: "MAILAND"
-    },
-    {
-        date: new Date(2022, 5, 29, 8, 0, 0, 0),
-        details: "Bakc fahren",
-        emailList: ["olcaygoeren@gmail.com"],
-        intervall: null,
-        ort: "ITALIEN",
-        title: "Rückfahrt"
-    }, {
-        date: new Date(2022, 5, 29, 8, 0, 0, 0),
-        details: "details",
-        emailList: ["olcaygoeren@gmail.com"],
-        intervall: Intervall.DAILY,
-        ort: "BERLIN",
-        title: "Wir sind zurück 😎"
-    },
-]
-
-const initOrdered: IAppointmentOrdererd[] = [
-    {
-        date: new Date(2022, 1, 30, 12, 0),
-        appointments: [
-            {
-                date: new Date(2022, 1, 30, 12, 0),
-                details: "Um diese Zeit sollten wir ca. ankommen",
-                emailList: ["olcaygoeren@gmail.com"],
-                intervall: Intervall.DAILY,
-                ort: "Italien",
-                title: "ANKUNFT"
-            },
-            {
-                date: new Date(2022, 1, 30, 12, 0),
-                details: "Um diese Zeit sollten wir ca. ankommen",
-                emailList: ["olcaygoeren@gmail.com"],
-                intervall: Intervall.DAILY,
-                ort: "Italien",
-                title: "ANKUNFT"
-            }
-        ]
-    },
-    {
-        date: new Date(2022, 3, 24, 12, 0),
-        appointments: [
-            {
-                date: new Date(2022, 3, 24, 12, 0),
-                details: "Um diese Zeit sollten wir ca. ankommen",
-                emailList: ["olcaygoeren@gmail.com"],
-                intervall: Intervall.DAILY,
-                ort: "Italien",
-                title: "ANKUNFT"
-            }
-
-        ]
-    },
-    {
-        date: new Date(2022, 4, 30, 12, 0),
-        appointments: [
-            {
-                date: new Date(2022, 4, 30, 12, 0),
-                details: "Um diese Zeit sollten wir ca. ankommen",
-                emailList: ["olcaygoeren@gmail.com"],
-                intervall: Intervall.DAILY,
-                ort: "Italien",
-                title: "ANKUNFT"
-            },
-            {
-                date: new Date(2022, 4, 30, 12, 0),
-                details: "Um diese Zeit sollten wir ca. ankommen",
-                emailList: ["olcaygoeren@gmail.com"],
-                intervall: Intervall.DAILY,
-                ort: "Italien",
-                title: "ANKUNFT"
-            },
-            {
-                date: new Date(2022, 4, 30, 12, 0),
-                details: "Um diese Zeit sollten wir ca. ankommen",
-                emailList: ["olcaygoeren@gmail.com"],
-                intervall: Intervall.DAILY,
-                ort: "Italien",
-                title: "ANKUNFT"
-            },
-        ]
-    },
-    {
-        date: new Date(2022, 6, 30, 12, 0, 0, 0),
-        appointments: [
-
-        ]
-    }
-]
-
 const useTerminStore = create<ITermine>((set, get) => ({
-    localAppointments: initOrdered,
-    localPush: (termin) => {
-        const justPushedDate = new Date(termin.date.getFullYear(), termin.date.getMonth(), termin.date.getDate());
-        let arry = [...get().localAppointments];
-        let pushed = false;
-        for (let i = 0; i < arry.length; i++) {
-            const element = arry[i];
-            const justElementDate = new Date(element.date.getFullYear(), element.date.getMonth(), element.date.getDate())
-            if (isEqual(justPushedDate, justElementDate)) {
-                arry[i].appointments.push(termin)
-                set((prev) => ({ localAppointments: arry }));
-                pushed = true;
-                break;
+    appointments: [],
+    orderAll: (appointments: IAppointment[]) => {
+        let orderedAppointments: IAppointmentOrdererd[] = [];
+        appointments.forEach((appointment: IAppointment) => {
+            appointment.date = new Date(appointment.date);
+            appointment.von = new Date(appointment.von);
+            appointment.bis = new Date(appointment.bis);
+            const justElementDate = new Date(appointment.date.getFullYear(), appointment.date.getMonth(), appointment.date.getDate());
+            const value = orderedAppointments.findIndex(ele => {
+                return (isEqual(ele.date, justElementDate));
+            });
+            if (value === -1) {
+                orderedAppointments.push({
+                    date: justElementDate,
+                    appointments: [appointment]
+                })
+            } else {
+                orderedAppointments[value].appointments.push(appointment);
             }
-        }
-        if (pushed === false) {
-            let appointment: IAppointmentOrdererd = {
-                date: termin.date,
-                appointments: [termin]
+        })
+        orderedAppointments = orderedAppointments.map((ele) => {
+            let subSorted = ele.appointments.sort((a, b) => a.von.getTime() - b.von.getTime())
+
+            return {
+                date: ele.date,
+                appointments: subSorted
             }
-            arry.push(appointment);
-            arry.sort(function (a, b) { return a.date.getTime() - b.date.getTime() });
-            set((prev) => ({ localAppointments: arry }));
+        });
+        orderedAppointments.sort(function (a, b) {
+            return a.date.getTime() - b.date.getTime()
         }
+        );
+        set((prev) => ({ appointments: orderedAppointments }));
     },
-    localDelete: (numOne: number, numTwo: number) => {
-        let arry = [...get().localAppointments];
-        arry[numOne].appointments.splice(numTwo, 1);
-        set((prev) => ({ localAppointments: arry }));
+    orderSingle: (appointment: IAppointment) => {
+        const appointments = [...get().appointments];
+        appointment.date = new Date(appointment.date);
+        const justElementDate = new Date(appointment.date.getFullYear(), appointment.date.getMonth(), appointment.date.getDate());
+        const value = appointments.findIndex(ele => isEqual(ele.date, justElementDate));
+        if (value === -1) {
+            appointments.push({
+                date: justElementDate,
+                appointments: [appointment]
+            })
+            appointments.sort(function (a, b) { return a.date.getTime() - b.date.getTime() });
+        } else {
+            appointments[value].appointments.push(appointment);
+        }
+        set((prev) => ({ appointments: appointments }));
+        console.log(appointments);
+    },
+    remove: async (numOne: number, numTwo: number, token) => {
+        let arry = [...get().appointments];
+        const ele = arry[numOne].appointments[numTwo];
+        try {
+            await axios.delete(process.env.REACT_APP_APPOINTMENTS! + "/" + ele.id,
+                {
+                    headers: {
+                        Authorization: "Bearer " + token
+                    }
+                });
+            get().getAppointments(token);
+        } catch (error) {
+            console.log(error);
+        }
     },
     getAppointments: async (token) => {
-        const { data } = await axios.get<ITermineResponse>(process.env.REACT_APP_APPOINTMENTS!, {
+        const { data } = await axios.get<IAppointment[]>(process.env.REACT_APP_APPOINTMENTS!, {
             headers: {
-                Authorization: token
+                Authorization: "Bearer " + token
             }
         })
-        set((prev) => ({ localAppointments: data.appointments }));
+        get().orderAll(data);
+        // set((prev) => ({ appointments: data }));
     },
     postAppointments: async (termin, token) => {
-
-        const { data } = await axios.post(process.env.REACT_APP_APPOINTMENTS!, {
-            ...termin
-        }, {
-            headers: {
-                Authorization: token
-            }
-        })
-        await get().getAppointments(token);
+        try {
+            const { data } = await axios.post<IAppointment>(process.env.REACT_APP_APPOINTMENTS!, {
+                ...termin
+            }, {
+                headers: {
+                    Authorization: "Bearer " + token
+                }
+            })
+            get().getAppointments(token);
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    putAppointment: async (termin, token) => {
+        // iwie updaten den lokal state!
+        try {
+            const { data } = await axios.put(process.env.REACT_APP_APPOINTMENTS! + "/" + termin.id, {
+                ...termin
+            }, {
+                headers: {
+                    Authorization: "Bearer " + token
+                }
+            })
+            get().getAppointments(token);
+        } catch (error) {
+            console.log(error)
+        }
     },
     singleRef: React.createRef<HTMLDivElement>(),
     listRef: React.createRef<HTMLDivElement[]>(),
@@ -207,7 +154,6 @@ const useTerminStore = create<ITermine>((set, get) => ({
     setListRef: refList => {
         set((prev) => ({ listRef: refList }));
     }
-
 }))
 
 export default useTerminStore;

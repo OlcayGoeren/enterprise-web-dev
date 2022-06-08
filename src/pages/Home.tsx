@@ -36,7 +36,6 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
     useEffect(() => {
         setAw(anmeldenWidth.current?.offsetWidth!);
         setRw(registerWidth.current?.offsetHeight!);
-        console.log(aw, rw);
     }, []);
 
     const handleRegisterClick = () => {
@@ -68,6 +67,9 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
                 navigate('/test', { replace: true });
             })
             .catch((err) => {
+                console.log(err);
+                console.log(process.env.REACT_APP_LOGIN!);
+                console.log(process.env);
                 setErrorText(err.response.data.message)
                 setError(true);
             });
@@ -84,6 +86,7 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
                     setShowTip(true);
                 })
                 .catch((err) => {
+                    console.log(err);
                     setErrorText(err.response.data.message)
                     setError(true);
                 });
@@ -96,10 +99,6 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
         return () => clearTimeout(timer1);
     }, [showError]);
 
-    // onMouseDown={() => console.log("ich bin drinne 2")} onMouseEnter={() => { console.log("2") }}
-    // onMouseDown={() => console.log("ich bin drinne 1")} onMouseLeave={() => { console.log("leave 1") }} onMouseEnter={() => { console.log("1") }}
-    // https://www.w3schools.com/tags/ref_eventattributes.asp
-    // justify-between
     return (
         <div className="w-screen h-screen bg-stone-900 flex flex-col sm:flex-row sm:justify-center py-10 sm:px-40 px-2">
             <div className="left mx-5 sm:flex sm:justify-center sm:flex-col sm:w-[40%]">
