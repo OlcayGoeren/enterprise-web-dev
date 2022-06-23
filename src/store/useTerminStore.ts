@@ -20,6 +20,7 @@ export interface IAppointment {
     emailList: string[],
     von: Date,
     bis: Date,
+    fromBetreiber?: boolean,
 }
 
 export interface IAppointmentOrdererd {

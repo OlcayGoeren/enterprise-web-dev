@@ -2,6 +2,7 @@ import { Add, ImportExport, Share, ShareRounded } from '@mui/icons-material';
 import React, { useEffect } from 'react';
 import { DayPicker } from 'react-day-picker';
 import useRangeStore from '../store/useRangeStore';
+import useVisitorStore from '../store/useVisitorStore';
 import useWeekNamesStore from '../store/useWeekNamesStore';
 import useWidthStore from '../store/useWidthStore';
 
@@ -14,6 +15,8 @@ const NavigationBar: React.FunctionComponent<INavigationBarComponentProps> = ({ 
     const { dayNamesShort, months } = useWeekNamesStore((state) => state);
     const { width: windowWidth, changeWidth } = useWidthStore((state) => state);
     const { range } = useRangeStore((store) => store);
+
+    const { toggleVisitorModal } = useVisitorStore((store) => store);
 
     let resizeWindow = () => {
         changeWidth(window.innerWidth);
@@ -45,7 +48,7 @@ const NavigationBar: React.FunctionComponent<INavigationBarComponentProps> = ({ 
                 />
             </div>
             <div className=" flex mr-28 space-x-4 ml-4 sm:absolute sm:left-[200px] ">
-                <button className='bg-[#4E4343] p-2 rounded text-[#F1DABF]'>
+                <button onClick={() => toggleVisitorModal()} className='bg-[#4E4343] p-2 rounded text-[#F1DABF]'>
                     <Share style={{ color: "#F1DABF" }} /> {windowWidth <= 980 ? "" : "TERMIN IMPORTIEREN"}
                 </button>
                 <button className='bg-[#4E4343] p-2 rounded text-[#F1DABF]'>

@@ -4,19 +4,17 @@ import LayoutComponent from './components/Layout';
 import RequireAuth from './components/RequireAuth';
 import AboutPage from './pages/About';
 import HomePage from './pages/Home';
+import ShareAccessPage from './pages/ShareAccessPage';
 import TestPage from './pages/Test';
 
-export interface IApplicationProps {}
+export interface IApplicationProps { }
 
 const Application: React.FunctionComponent<IApplicationProps> = (props) => {
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<HomePage />} />
-                {/* <Route path="about">
-                    <Route index element={<AboutPage />} />
-                    <Route path=":number" element={<AboutPage />} />
-                </Route> */}
+                <Route path="/share/:shareId" element={<ShareAccessPage />} />
 
                 <Route
                     path="/test"

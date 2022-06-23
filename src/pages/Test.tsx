@@ -14,12 +14,13 @@ import AppointmentModal from '../components/AppointmentModal';
 import useAppointmentModal from '../store/useAppointmentModal';
 import useTerminStore from '../store/useTerminStore';
 import useAuthStore from '../store/useAuthStore';
+import ShareModal from '../components/ShareModal';
+import useVisitorStore from '../store/useVisitorStore';
 
 
 
 export interface ITestPageProps { }
 
-// https://flowbite.com/docs/plugins/datepicker/
 const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
 
     const [monthView, setMonthView] = useState(true);
@@ -32,9 +33,7 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
     const { selectedMonth, changeMonth } = useRangeStore((store) => store);
     const { token } = useAuthStore((store) => store);
     const { getAppointments, appointments } = useTerminStore((store) => store);
-
-
-    const modal = useRef<HTMLDivElement>(null)
+    const { showVisitorModal } = useVisitorStore(store => store);
 
     useEffect(() => {
         changeMonth(range?.from!.getMonth()!);
@@ -76,7 +75,7 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
 
     return (
         <>
-            <div className="w-screen h-screen bg-[#2B2B2B] flex flex-col">
+            <div className={`w-screen h-screen bg-[#2B2B2B] flex flex-col ${showVisitorModal ? "custom" : ""}`}>
                 <NavigationBar handleDayClick={handleDayClick} />
                 <main className='p-2 flex flex-col sm:flex-row-reverse sm:justify-end h-[89%] '>
                     <div className='sm:w-[100%] sm:p-4'>
@@ -114,6 +113,11 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
 
             {show ?
                 <AppointmentModal dateProp={selectedDate} />
+                :
+                null
+            }
+            {showVisitorModal ?
+                <ShareModal />
                 :
                 null
             }

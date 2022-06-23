@@ -22,7 +22,7 @@ const Upcommingevents: React.FunctionComponent<IUpcommingeventsComponentProps> =
     const { token } = useAuthStore((store) => store);
     const refs = useRef<HTMLDivElement[]>([]);
     const ref = useRef<HTMLDivElement>(null);
-    const { setShow, show, setSelectedTermin, setNumOne, setNumTwo } = useAppointmentModal((state) => state);
+    const { setSelectedTermin, setNumOne, setNumTwo } = useAppointmentModal((state) => state);
 
 
     function deleteMe(numOne: number, numTwo: number) {
@@ -60,7 +60,7 @@ const Upcommingevents: React.FunctionComponent<IUpcommingeventsComponentProps> =
                         return <div key={numOne} ref={el => putRefs(el, numOne, lists)} className="flex flex-col">
                             <span className='text-[#858383] font-bold px-4 py-2'>{lists.date.getDate() + "." + add(lists.date, { months: 1 }).getMonth() + "." + lists.date.getFullYear()}</span>
                             {lists.appointments.map((ele, numTwo) => {
-                                return <div key={numTwo} className="card flex mb-2 flex-col bg-[#1D355C] text-[#CFCFCF] p-4 pr-5 rounded-xl shadow-md">
+                                return <div key={numTwo} className={`card flex mb-2 flex-col ${ele.fromBetreiber ? "bg-[#1D355C]" : "bg-red-600"}  text-[#CFCFCF] p-4 pr-5 rounded-xl shadow-md`}>
                                     <span className="text-[12px]">{('0' + ele.von.getHours()).slice(-2) + ":" + ('0' + ele.von.getMinutes()).slice(-2)
                                         + "-" + ('0' + ele.bis.getHours()).slice(-2) + ":" + ('0' + ele.bis.getMinutes()).slice(-2)
                                         + " | " + ele.title}</span>

@@ -16,9 +16,7 @@ export interface ITestPageProps {
 }
 
 const AppointmentModal: React.FunctionComponent<ITestPageProps> = ({ dateProp }) => {
-
     const { show, setShow, showButtons, selectedTermin, setSelectedTermin, numOne, numTwo } = useAppointmentModal((state) => state)
-
     const [emailList, setEmailList] = useState<string[]>([]);
     const [email, setEmail] = useState<string>("");
     const [title, setTitle] = useState<string>("Titel");
