@@ -17,6 +17,7 @@ export interface IUpcommingeventsComponentProps {
 
 const Upcommingevents: React.FunctionComponent<IUpcommingeventsComponentProps> = () => {
 
+    const [counter, setCounter] = useState(0);
     const [showAlt, setShowAlt] = useState(true);
     const { appointments, remove, setListRef, setSingleRef, listRef } = useTerminStore((store) => store);
     const { token } = useAuthStore((store) => store);
@@ -36,6 +37,14 @@ const Upcommingevents: React.FunctionComponent<IUpcommingeventsComponentProps> =
     }
 
     useEffect(() => {
+        let myCounter = 0;
+        for (let i = 0; i < appointments.length; i++) {
+            myCounter += appointments[i].appointments.length;
+        }
+        setCounter(myCounter);
+    }, [appointments]);
+
+    useEffect(() => {
         // @ts-ignore
         setListRef(refs);
     }, [refs])
@@ -53,21 +62,20 @@ const Upcommingevents: React.FunctionComponent<IUpcommingeventsComponentProps> =
 
     return (
         <div ref={ref} className="overflow-scroll sm:w-[25%]">
-            <h1 className='text-white font-bold mb-2'>Es stehen xx Termine bevor</h1>
+            <h1 className='text-white font-bold mb-2'>Es stehen {counter} Termine bevor</h1>
             {showAlt ?
                 appointments.map((lists, numOne) => {
                     if (lists.appointments.length > 0) {
                         return <div key={numOne} ref={el => putRefs(el, numOne, lists)} className="flex flex-col">
                             <span className='text-[#858383] font-bold px-4 py-2'>{lists.date.getDate() + "." + add(lists.date, { months: 1 }).getMonth() + "." + lists.date.getFullYear()}</span>
                             {lists.appointments.map((ele, numTwo) => {
-                                return <div key={numTwo} className={`card flex mb-2 flex-col ${ele.fromBetreiber ? "bg-[#1D355C]" : "bg-red-600"}  text-[#CFCFCF] p-4 pr-5 rounded-xl shadow-md`}>
+                                return <div onClick={() => openModal(numOne, numTwo)} key={numTwo} className={`card flex mb-2 flex-col ${ele.fromBetreiber ? "bg-[#1D355C]" : "bg-red-600"}  text-[#CFCFCF] p-4 pr-5 rounded-xl shadow-md`}>
                                     <span className="text-[12px]">{('0' + ele.von.getHours()).slice(-2) + ":" + ('0' + ele.von.getMinutes()).slice(-2)
                                         + "-" + ('0' + ele.bis.getHours()).slice(-2) + ":" + ('0' + ele.bis.getMinutes()).slice(-2)
                                         + " | " + ele.title}</span>
                                     <span className="my-1"></span>
                                     <div className="flex flex-row justify-center align-middle">
                                         <span className="font-bold text-lg">{ele.details}</span>
-                                        <span onClick={() => openModal(numOne, numTwo)} className='text-red-900 text-2xl'> <ArrowRightAlt /></span>
                                     </div>
                                 </div>
                             })

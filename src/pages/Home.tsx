@@ -64,7 +64,7 @@ const HomePage: React.FunctionComponent<IHomePageProps> = (props) => {
                 const data = resp.data['jwt-token'];
                 setToken(data);
                 changeIsSignIn(true);
-                navigate('/test', { replace: true });
+                navigate('/kalender', { replace: true });
             })
             .catch((err) => {
                 console.log(err);

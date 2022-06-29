@@ -16,6 +16,8 @@ import useTerminStore from '../store/useTerminStore';
 import useAuthStore from '../store/useAuthStore';
 import ShareModal from '../components/ShareModal';
 import useVisitorStore from '../store/useVisitorStore';
+import { useNavigation } from 'react-day-picker';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -34,6 +36,7 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
     const { token } = useAuthStore((store) => store);
     const { getAppointments, appointments } = useTerminStore((store) => store);
     const { showVisitorModal } = useVisitorStore(store => store);
+    const navigate = useNavigate();
 
     useEffect(() => {
         changeMonth(range?.from!.getMonth()!);
@@ -41,7 +44,11 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
         const end = getEndMonth(range?.from!)
         setWeekChunks(getDatesAndChunkBetween(start, end));
         (async function anyNameFunction() {
-            await getAppointments(token);
+            try {
+                await getAppointments(token);
+            } catch (error) {
+                navigate('/', { replace: true });
+            }
         })();
     }, [range]);
 
@@ -52,11 +59,6 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
             from: isMonday(day) ? day : previousMonday(day),
             to: isSunday(day) ? day : nextSunday(day)
         });
-    }
-
-    const switchView = (view: string) => {
-        if (view === "m") setMonthView(true)
-        else setMonthView(false)
     }
 
     const monthNavigation = (forward: boolean) => {
@@ -81,15 +83,6 @@ const TestPage: React.FunctionComponent<ITestPageProps> = (props) => {
                     <div className='sm:w-[100%] sm:p-4'>
                         <div className="multibuttons my-2 flex flex-row">
                             <div className="">
-                                <button onClick={() => switchView("m")} className={`${monthView ? "bg-[#391587]" : "bg-[#423F3E]"}  text-[#F1DABF] px-3 py-2 rounded-l-xl`}>
-                                    <CalendarMonth fontSize="small" />
-                                </button>
-                                <button onClick={() => switchView("w")} className={`${monthView ? "bg-[#423F3E]" : "bg-[#391587]"} text-[#F1DABF] px-3 py-2 rounded-r-xl`}>
-                                    <CalendarViewWeek fontSize="small" />
-                                </button>
-                            </div>
-
-                            <div className="ml-4">
                                 <button onClick={() => monthNavigation(false)} className={`text-[#F1DABF] px-3 py-2 rounded-l-xl`}>
                                     <ArrowBackIos fontSize="small" />
                                 </button>

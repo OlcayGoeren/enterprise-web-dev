@@ -9,7 +9,7 @@ export interface IAboutPageProps { }
 
 const ShareAccessPage: React.FunctionComponent<IAboutPageProps> = (props) => {
     // const [message, setMessage] = useState('');
-    const { putVisitor, error } = useVisitorStore((store) => store);
+    const { putVisitor, error, setVisitor } = useVisitorStore((store) => store);
     const { shareId } = useParams();
     const { setToken } = useAuthStore(store => store);
     let navigate = useNavigate();
@@ -30,7 +30,8 @@ const ShareAccessPage: React.FunctionComponent<IAboutPageProps> = (props) => {
             putVisitor(storageGuestEmail, shareId!)
                 .then((resp) => {
                     setToken(resp.data['jwt-token']);
-                    navigate('/test', { replace: true });
+                    setVisitor(true);
+                    navigate('/kalender', { replace: true });
                 })
         }
     }, []);

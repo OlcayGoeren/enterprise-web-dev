@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import LayoutComponent from './components/Layout';
 import RequireAuth from './components/RequireAuth';
@@ -10,14 +10,14 @@ import TestPage from './pages/Test';
 export interface IApplicationProps { }
 
 const Application: React.FunctionComponent<IApplicationProps> = (props) => {
+
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/share/:shareId" element={<ShareAccessPage />} />
-
                 <Route
-                    path="/test"
+                    path="/kalender"
                     element={
                         <RequireAuth>
                             <TestPage />

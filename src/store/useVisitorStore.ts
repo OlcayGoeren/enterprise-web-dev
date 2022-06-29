@@ -34,15 +34,12 @@ const useVisitorStore = create<IVisitor>((set, get) => ({
                         Authorization: "Bearer " + token
                     }
                 });
-
             return data;
         } catch (error) {
             console.log(error);
             get().setError(true);
-
         }
     },
-
     putVisitor: async (visitor: string, shareId: string) => {
         try {
             return await axios.put(process.env.REACT_APP_VISITOR!, {
